@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "Data.proto";
+
+service Transfer {
+    rpc send(ArrayRequest) returns (ArrayResponse){}
+}
+
+
+message Request {
+  map<string,Data> input = 1;
+}
+
+message Response {
+  map<string,Data> output = 1;
+}
+
+
+message ArrayRequest {
+    repeated Request inputs = 2;
+}
+
+
+message ArrayResponse {
+    repeated Response outputs = 2;
+}
