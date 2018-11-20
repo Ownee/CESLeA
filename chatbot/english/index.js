@@ -80,7 +80,7 @@ let chat = (_sentence, sess = {}) => {
             .then((result)=>{
                 console.log(result);
                 let output_sentence = "";
-                return makeResponse(sess,output_sentence)
+                return makeResponse(sess,result.description,result)
             })
 
     }else if(sentence.includes("weather")){
@@ -174,19 +174,22 @@ let chat = (_sentence, sess = {}) => {
 
     } else {
         sess.state = STATE.SELFINTRO
-        console.log(sess.quest);
+        console.log(sess);
+        console.log(typeof sess.line_num)
         if (sess.quest) {
-            return generator.generatorSelf("1", sentence).then((res) => {
+            return generator.generatorSelf("1", sentence, sess.line_num).then((res) => {
                 if (res.result.includes("Thank you for using it")) {
                     sess.state = STATE.CHITCHAT
                 }
+                sess.line_num = res.line_num;
                 return makeResponse(sess, res.result)
             })
         } else {
-            return generator.generatorSelf("0", sentence).then((res) => {
+            return generator.generatorSelf("0", sentence, sess.line_num).then((res) => {
                 if (res.result.includes("Thank you for using it")) {
                     sess.state = STATE.CHITCHAT
                 }
+                sess.line_num = res.line_num;
                 return makeResponse(sess, res.result)
             })
         }

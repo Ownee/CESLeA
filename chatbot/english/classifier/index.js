@@ -54,17 +54,17 @@ let classifierC = (sentence) => {
             if(err){
                 reject(err)
             }else{
-                if(parseInt(res["output"]) === 0){
-                    let response ={
-                        result:5
-                    };
-                    resolve(response);
-                }else{
+                // if(parseInt(res["output"]) === 0){
+                //     let response ={
+                //         result:5
+                //     };
+                //     resolve(response);
+                // }else{
                     let response ={
                         result:parseInt(res["output"])
                     };
                     resolve(response);
-                }
+                // }
             }
         });
     })

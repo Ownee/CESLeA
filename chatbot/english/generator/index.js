@@ -43,11 +43,11 @@ let generatorGag = (sentence) => {
     })
 };
 
-let generatorNew = (sentence,emotion) => {
+let generatorNew = (sentence,act) => {
     return new Promise((resolve, reject) => {
         let request = {
             sentence:sentence,
-            emotion:emotion
+            act:act
         };
         generatorNewClient.send(request,(err,res)=>{
             if(err){
@@ -82,12 +82,14 @@ let generatorW = (sentence) => {
     })
 };
 
-let generatorSelf = (index, sentence) => {
+let generatorSelf = (index, sentence, line_num) => {
     return new Promise((resolve, reject) => {
         let request = {
             index:index,
-            sentence:sentence
+            sentence:sentence,
+            line_num:line_num
         };
+        console.log(request)
         generatorSelfClient.send(request,(err,res)=>{
             if(err){
                 console.log("grpc error in generatorSelf");
@@ -95,8 +97,10 @@ let generatorSelf = (index, sentence) => {
             }else{
 
                 let response ={
-                    result: res["output"]
+                    result: res["output"],
+                    line_num: res["line_num"]
                 };
+                console.log(response)
                 resolve(response);
             }
         });

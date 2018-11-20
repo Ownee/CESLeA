@@ -71,7 +71,11 @@ router.get('/english', function (req, res, next) {
 
 router.get('/english/question', function (req, res, next) {
     let sentence = req.query.sentence;
-    questionSess.quest = true;
+    let line_num = parseInt(req.query.line_num);
+    let quest = JSON.parse(req.query.quest);
+    questionSess.quest = quest;
+    questionSess.line_num = line_num;
+    console.log(typeof line_num)
     englishChat.chat(sentence, questionSess)
         .then((result) => {
             englishSess = Object.assign({}, englishSess, result.sess);
