@@ -75,7 +75,7 @@ router.get('/english/question', function (req, res, next) {
     let quest = JSON.parse(req.query.quest);
     questionSess.quest = quest;
     questionSess.line_num = line_num;
-    console.log(typeof line_num)
+    console.log(line_num)
     englishChat.chat(sentence, questionSess)
         .then((result) => {
             englishSess = Object.assign({}, englishSess, result.sess);
@@ -94,6 +94,19 @@ router.get('/english/check', function (req, res, next) {
             res.json(result);
         }).catch((err) => {
             console.log(err);
+        res.status(500).json(err);
+    })
+});
+
+
+router.get('/english/flag', function (req, res, next) {
+    let flag = parseInt(req.query.flag);
+    questionSess.state = flag;
+    englishChat.chat("CHMD", questionSess)
+        .then((result) => {
+            res.json(result);
+        }).catch((err) => {
+        console.log(err);
         res.status(500).json(err);
     })
 });

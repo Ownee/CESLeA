@@ -2,6 +2,7 @@ let classifier = require("./classifier");
 let generator = require("./generator");
 let api = require("./api");
 let axios = require("axios");
+let opn = require("opn");
 
 const STATE = {
     CHITCHAT: 0,
@@ -74,13 +75,34 @@ let isTravel = (_sentence)=>{
 let chat = (_sentence, sess = {}) => {
     let sentence = _sentence.toLowerCase();
 
-
-    if(sentence.includes("find")){
-        return api.getInfoFromWiki(sentence.replace("find",""))
+    if (sentence.includes("CHMD")) {
+        return {result:"MODE changed"}
+    }else if(sentence.includes("where is")){
+        let thePlace = sentence.split("where is").pop();
+        opn("https://www.google.com/maps/search/?api=1&query=" + thePlace);
+        return makeResponse(sess,thePlace)
+    }else if(sentence.includes("map of")){
+        let thePlace = sentence.split("map of").pop();
+        opn("https://www.google.com/maps/search/?api=1&query=" + thePlace);
+        return makeResponse(sess,thePlace)
+    }else if(sentence.includes("play")){
+        let thePlace = sentence.split("play").pop();
+        opn("https://www.youtube.com/results?search_query=" + thePlace);
+        return makeResponse(sess,thePlace)
+    }else if(sentence.includes("video")){
+        let thePlace = sentence.split("video of").pop();
+        opn("https://www.youtube.com/results?search_query=" + thePlace);
+        return makeResponse(sess,thePlace)
+    }else if(sentence.includes("ces") || sentence.includes("cs") || sentence.includes("sears") || sentence.includes("serious")){
+        opn("https://www.ces.tech/");
+        return makeResponse(sess,"CES website")
+    }else if(sentence.includes("find") || sentence.includes("search") || sentence.includes("do you know")){
+        return api.getInfoFromWiki(sentence.replace("find","").replace("search","").replace("do you know",""))
             .then((result)=>{
-                console.log(result);
                 let output_sentence = "";
-                return makeResponse(sess,result.description,result)
+                console.log(result.results);
+                opn(result.results[2].url);
+                return makeResponse(sess,result.results[0].title)
             })
 
     }else if(sentence.includes("weather")){
@@ -176,23 +198,27 @@ let chat = (_sentence, sess = {}) => {
         sess.state = STATE.SELFINTRO
         console.log(sess);
         console.log(typeof sess.line_num)
+        let gestureNum = "";
         if (sess.quest) {
-            return generator.generatorSelf("1", sentence, sess.line_num).then((res) => {
-                if (res.result.includes("Thank you for using it")) {
-                    sess.state = STATE.CHITCHAT
-                }
-                sess.line_num = res.line_num;
-                return makeResponse(sess, res.result)
-            })
+            gestureNum = "1";
         } else {
-            return generator.generatorSelf("0", sentence, sess.line_num).then((res) => {
-                if (res.result.includes("Thank you for using it")) {
-                    sess.state = STATE.CHITCHAT
-                }
-                sess.line_num = res.line_num;
-                return makeResponse(sess, res.result)
-            })
+            gestureNum = "0";
         }
+        return generator.generatorSelf(gestureNum, sentence, sess.line_num).then((res) => {
+            if (res.result.includes("Thank you for using it")) {
+                sess.state = STATE.CHITCHAT
+            }
+            sess.line_num = res.line_num;
+            if (res.result.includes("video1")) {
+                opn("https://www.youtube.com/watch?v=M6c0uDPHnxs");
+            } else if (res.result.includes("video2")) {
+                opn("https://www.youtube.com/watch?v=JNC3mO_kguc");
+            } else if (res.result.includes("video3")) {
+                opn("https://www.youtube.com/watch?v=39D2GhQNAKE");
+            }
+            return makeResponse(sess, res.result)
+        })
+        
     }
 
 };
